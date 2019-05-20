@@ -1,10 +1,10 @@
 from PyQt5.QtWidgets import QLineEdit, QPushButton, QWidget, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, QCoreApplication
 from Source.Interface import Interface
 from Source import Exceptions
 from Source.Board import Board
 from Source import globals
-
+import sys, time
 
 class Logic:
     def __init__(self, central_widget):
@@ -14,13 +14,13 @@ class Logic:
 
     def create_variables(self):
         self.__n = QLineEdit()
-        self.__n.setMaximumSize(40, 25)
+        # self.__n.setMaximumSize(40, 25)
         self.__n.setText("5")
         self.__m = QLineEdit()
-        self.__m.setMaximumSize(40, 25)
+        # self.__m.setMaximumSize(40, 25)
         self.__m.setText("7")
         self.__mines = QLineEdit()
-        self.__mines.setMaximumSize(40, 25)
+        # self.__mines.setMaximumSize(40, 25)
         self.__mines.setText("7")
         self.__ok_button = QPushButton("Start Game")
         self.__ok_button.setShortcut(Qt.Key_Return)
@@ -55,7 +55,7 @@ class Logic:
         except Exceptions.RangeException as r:
             print(r.get_message())
             r.get_statement()
-#hahahahhaha
+
         else:
             if self.first_game is 0:
                 self.first_game = 1
@@ -63,8 +63,11 @@ class Logic:
                 self.interface.clear_board_layout(self.interface.get_board_layout())
             globals.game_over = False
             globals.number_of_no_bomb = int(self.__n.text()) * int(self.__m.text()) - int(self.__mines.text())
+            globals.number_of_bomb = int(self.__mines.text())
             self.create_board(self.interface.end_game)
             self.interface.create_board_layout(self.get_board())
+
+            #self.using_q_thread()
 
     def create_board(self, end_game_function):
         self.__board = Board(self.get_board_variable(), end_game_function)
@@ -72,3 +75,17 @@ class Logic:
     def get_board(self):
         return self.__board
 
+    '''  def using_q_thread(self):
+        thread = self.AThread()
+        thread.finished.connect(globals.app.exit)
+        thread.start()
+
+    class AThread(QThread):
+
+        def run(self):
+            count = 0
+            while count < 5:
+                time.sleep(1)
+                print("A Increasing")
+                count += 1
+                '''
