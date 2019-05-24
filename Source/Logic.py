@@ -75,6 +75,9 @@ class Logic:
     def get_board(self):
         return self.__board
 
+    def change_bombs_color(self, change):
+        self.get_board().change_bombs_color(change)  # bring a function in Board where bombs fields will be dark
+
     '''  def using_q_thread(self):
         thread = self.AThread()
         thread.finished.connect(globals.app.exit)

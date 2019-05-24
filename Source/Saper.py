@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
+from PyQt5.QtCore import Qt
 import sys
 from PyQt5 import QtGui
 from Source.Logic import Logic
@@ -19,6 +20,7 @@ class Window(QMainWindow):
         self.setWindowTitle('Saper')
         self.setWindowIcon(QtGui.QIcon('../Images/WindowMainIcon.png'))
         self.resize(500, 400)
+        #self.setStyleSheet('background-image: url(../Images/WindowMainIcon.png);')
         self.game = Logic(self.central_widget)
 
     def closeEvent(self, event):  # if we close Window 'event' is generated( QWidget.closeEvent(self, QCloseEvent) )
@@ -27,6 +29,20 @@ class Window(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_X:
+            globals.xyzzy = 1
+        elif e.key() == Qt.Key_Y and globals.xyzzy == 1:
+            globals.xyzzy += 1
+        elif e.key() == Qt.Key_Z and (globals.xyzzy == 2 or globals.xyzzy == 3):
+            globals.xyzzy += 1
+        elif e.key() == Qt.Key_Y and (globals.xyzzy == 4):
+            self.game.change_bombs_color(True)  # bombs fields change color(with False as a arg color return to basic)
+        elif e.key() == Qt.Key_R:
+            self.game.change_bombs_color(False)
+        else:
+            globals.xyzzy = 0
 
 
 if __name__ == '__main__':

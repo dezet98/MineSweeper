@@ -1,4 +1,5 @@
 from Source.Button import Button
+from Source import globals
 import random
 
 
@@ -22,8 +23,8 @@ class Board:
 
         self.bombs_index = random.sample(all_index, self.variable['mines'])
 
-        for xy in self.bombs_index:
-            self.__buttons[xy[0]][xy[1]].set_bomb()
+        for x, y in self.bombs_index:
+            self.__buttons[x][y].set_bomb()
 
     # this can be in button if we are have a global n and m for example, you will see
     def set_numbers(self):
@@ -88,3 +89,14 @@ class Board:
     def free_bombs(self):
         for i in self.bombs_index:
             self.__buttons[i[0]][i[1]].set_icon('../Images/bomb.jfif', 20, 20)
+
+    def change_bombs_color(self, change):
+        if change:
+            for x, y in self.bombs_index:
+                self.__buttons[x][y].set_color(20)
+        else:
+            for x, y in self.bombs_index:
+                self.__buttons[x][y].set_basic_color()
+
+
+

@@ -28,6 +28,7 @@ class SettingsInterface:
 
 
         self.__statistics_box.addWidget(QLabel("Bombs: "))
+
     def layout(self):
         frame = QFrame()
         frame.setFrameShape(QFrame.StyledPanel)
