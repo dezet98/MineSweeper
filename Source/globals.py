@@ -8,12 +8,11 @@ def initialize():
     global number_of_bomb
     number_of_bomb = 0
 
-    global xyzzy    # this value is need in keyPressEvent to check clicked a sequence: xyzzy
-    xyzzy = 0
-
     global game_pause
     game_pause = False
 
     global time
     time = '00:00:00'
 
+    global first_click
+    first_click = False

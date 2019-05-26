@@ -1,19 +1,18 @@
 from PyQt5.QtWidgets import QLineEdit, QPushButton, QWidget, QMessageBox
-from PyQt5.QtCore import Qt, QThread, QCoreApplication
+from PyQt5 import QtCore
 from Source.Interface import Interface
 from Source import Exceptions
 from Source.Board import Board
 from Source import globals
-from PyQt5 import QtCore
-import sys, time
+
 
 class Logic:
     def __init__(self, central_widget, signals):
-        self.signals = signals
         self.create_variables()
-        self.interface = Interface(self.get_variable(), central_widget, self.signals)
-        self.create_board()     # create a default first board
-        self.__ok_button.clicked.connect(self.clicked_ok_button)
+        self.signals = signals
+        self.interface = Interface(self.get_variables(), central_widget, self.signals)
+        self.create_new_game()     # create a default first board
+        self.__new_game_button.clicked.connect(self.clicked_new_game_button)
         self.__pause_button.clicked.connect(self.clicked_pause_button)
 
     def create_variables(self):
@@ -26,18 +25,15 @@ class Logic:
         self.__mines = QLineEdit()
         # self.__mines.setMaximumSize(40, 25)
         self.__mines.setText("12")
-        self.__ok_button = QPushButton("Start Game")
-        self.__ok_button.setShortcut(Qt.Key_Return)
+        self.__new_game_button = QPushButton("New Game")
+        self.__new_game_button.setShortcut(QtCore.Qt.Key_Return)
         self.__pause_button = QPushButton("Pause")
-        self.__pause_button.setShortcut(Qt.Key_P)
+        self.__pause_button.setShortcut(QtCore.Qt.Key_P)
 
-    def get_variable(self):
-        return {'n': self.__n, 'm': self.__m, 'mines': self.__mines, 'ok_button': self.__ok_button, 'pause_button': self.__pause_button}
+    def get_variables(self):
+        return {'n': self.__n, 'm': self.__m, 'mines': self.__mines, 'ok_button': self.__new_game_button, 'pause_button': self.__pause_button}
 
-    def get_board_variable(self):
-        return {'n': int(self.__n.text()), 'm': int(self.__m.text()), 'mines': int(self.__mines.text())}
-
-    def clicked_ok_button(self):
+    def clicked_new_game_button(self):
         try:
             n = int(self.__n.text())
             m = int(self.__m.text())
@@ -50,9 +46,8 @@ class Logic:
 
         except ValueError:
             print("It's ValueError, user didn't pass 'int'\n")
-            __state_window = QWidget()
             __content = "Error: Fill boxes uses natural numbers"
-            __statement = QMessageBox.question(__state_window, "Message", __content, QMessageBox.Ok)
+            __statement = QMessageBox.question(QMessageBox(), "Message", __content, QMessageBox.Ok)
 
         except Exceptions.RangeException as r:
             print(r.get_message())
@@ -60,32 +55,29 @@ class Logic:
 
         else:
             self.interface.clear_board_layout(self.interface.get_board_layout())
-            self.create_board()
+            self.create_new_game()
 
-    def clicked_pause_button(self):
-        if globals.game_pause == False:
-            globals.game_pause = True
-            self.__pause_button.setStyleSheet('background-color: rgb(38,56,76)')
-        else:
-            globals.game_pause = False
-            self.__pause_button.setStyleSheet('background-color: rgb(, , ,)')
-
-    def get_board(self):
-        return self.__board
-
-    def change_bombs_color(self, change):
-        self.get_board().change_bombs_color(change)  # bring a function in Board where bombs fields will be dark
-
-    def create_board(self):
-        self.time()
+    def create_new_game(self):
         globals.game_over = False
         if globals.game_pause:
             self.clicked_pause_button()
         globals.number_of_no_bomb = int(self.__n.text()) * int(self.__m.text()) - int(self.__mines.text())
         globals.number_of_bomb = int(self.__mines.text())
-        self.signals.signal1.emit()
-        self.__board = Board(self.get_board_variable(), self.interface.end_game, self.signals)
-        self.interface.create_board_layout(self.get_board())
+        self.time()
+        self.signals.bombs_display.emit()
+        self.__board = Board(self.get_int_variables(), self.signals)
+        self.interface.create_board_layout(self.__board.get_variable())
+
+    def clicked_pause_button(self):
+        if not globals.game_pause:
+            globals.game_pause = True
+            self.__pause_button.setStyleSheet('background-color: rgb(38,56,76);color: rgb(255, 255, 255)')
+        else:
+            globals.game_pause = False
+            self.__pause_button.setStyleSheet('background-color: rgb(, , ,)')
+
+    def get_int_variables(self):
+        return {'n': int(self.__n.text()), 'm': int(self.__m.text()), 'mines': int(self.__mines.text())}
 
     def time(self):
         self.curr_time = QtCore.QTime(00, 00, 00)
@@ -99,5 +91,5 @@ class Logic:
             self.timer.start(1000)
         else:
             globals.time = self.curr_time.toString("hh:mm:ss")
-            self.signals.time_signal.emit()
+            self.signals.time_display.emit()
             self.curr_time = self.curr_time.addSecs(1)

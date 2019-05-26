@@ -1,16 +1,18 @@
 from Source.Button import Button
-from Source import globals
 import random
 
 
 class Board:
-    def __init__(self, variable, end_game_function, signals):
-        self.signals = signals
+    def __init__(self, variable, signals):
         self.variable = variable
-        self.__buttons = [[Button(j, i, end_game_function, self.free_others_function, self.free_bombs, self.signals) for i in range(self.variable['m'])] for j in range(self.variable['n'])]
+        self.__buttons = [[Button(x, y, self.free_others_function, self.free_bombs, signals) for y in range(self.variable['m'])] for x in range(self.variable['n'])]
         self.set_bombs()
         self.set_numbers()
         print("\nCreate Board")
+        signals.reconnect(signals.cloud_bombs, self.cloud_bombs())
+        signals.reconnect(signals.uncloud_bombs, self.uncloud_bombs())
+        signals.cloud_bombs.connect(self.cloud_bombs)
+        signals.uncloud_bombs.connect(self.uncloud_bombs)
 
     def get_variable(self):
         self.variable['buttons'] = self.__buttons
@@ -18,9 +20,9 @@ class Board:
 
     def set_bombs(self):
         all_index = []
-        for i in range(0, self.variable['n']):
-            for j in range(0, self.variable['m']):
-                all_index.append([i, j])
+        for x in range(0, self.variable['n']):
+            for y in range(0, self.variable['m']):
+                all_index.append([x, y])
 
         self.bombs_index = random.sample(all_index, self.variable['mines'])
 
@@ -50,7 +52,7 @@ class Board:
                     number_of += 1
                 if self.out_of_range(i+1, j+1) and [i+1, j+1] in self.bombs_index:
                    number_of += 1
-                self.__buttons[i][j].set_neighbours_bomb(number_of)
+                self.__buttons[i][j].set_number(number_of)
 
     def free_others_function(self, i, j):
         self.__buttons[i][j].free()
@@ -88,17 +90,20 @@ class Board:
                 self.__buttons[i + 1][j + 1].free_others_function(i+1, j+1)
 
     def free_bombs(self):
-        for i in self.bombs_index:
-            self.__buttons[i[0]][i[1]].set_icon('../Images/bomb.png', 20, 20)
-        for i in range(5): #change in future
-            self.change_bombs_color(True)
+        for x, y in self.bombs_index:
+            self.__buttons[x][y].set_icon('../Images/bomb.png', 20, 20)
+            self.__buttons[x][y].set_color(100)
 
-    def change_bombs_color(self, change):
-        if change:
-            for x, y in self.bombs_index:
-                self.__buttons[x][y].set_color(20)
-        else:
-            for x, y in self.bombs_index:
-                self.__buttons[x][y].set_basic_color()
+    def cloud_bombs(self):
+        for x, y in self.bombs_index:
+            self.__buttons[x][y].set_color(20)
+
+    def uncloud_bombs(self):
+        for x, y in self.bombs_index:
+            self.__buttons[x][y].set_basic_color()
+
+
+
+
 
 

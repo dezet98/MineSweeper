@@ -24,12 +24,12 @@ class SettingsInterface:
         self.__statistics_box.addWidget(QLabel("Time: "))
         self.time_display = QLCDNumber()
         self.__statistics_box.addWidget(self.time_display)
-        self.signals.time_signal.connect(self.show_time)
+        self.signals.time_display.connect(self.show_time)
 
         self.__statistics_box.addWidget(QLabel("Bombs: "))
         self.bombs_display = QLCDNumber()
         self.__statistics_box.addWidget(self.bombs_display)
-        self.signals.signal1.connect(self.set_bombs_display)
+        self.signals.bombs_display.connect(self.set_bombs_display)
 
     def show_time(self):
         self.time_display.display(globals.time)

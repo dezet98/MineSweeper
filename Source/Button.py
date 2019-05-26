@@ -5,7 +5,7 @@ from Source import globals
 
 
 class Button(QPushButton):
-    def __init__(self, x, y, end_game_function, free_others_function, free_bombs, signals):
+    def __init__(self, x, y, free_others_function, free_bombs, signals):
         super().__init__()
         self.signals = signals
         self.x = x
@@ -13,16 +13,13 @@ class Button(QPushButton):
         self.bomb = False
         self.flag = False
         self.question_mark = False
-        self.neighbours_bomb = 0
+        self.number = 0
         self.status_of_deactivate = False
-        self.end_game_function = end_game_function
-        self.status_of_defeat = False
         self.free_others_function = free_others_function
         self.free_bombs_function = free_bombs
         self.setMaximumSize(35, 35)
         self.setMinimumSize(35, 35)
         self.set_basic_color()
-        self.signal = pyqtSignal()
 
     def mousePressEvent(self, mouse_event):
         if mouse_event.button() == Qt.LeftButton and not globals.game_over:
@@ -38,11 +35,10 @@ class Button(QPushButton):
         if self.flag or self.question_mark:
             pass
         elif self.bomb:
-            self.status_of_deactivate = True
             self.free_bombs_function()
             globals.game_over = True
-            self.end_game_function(0)
-        elif self.neighbours_bomb != 0:
+            self.signals.loose.emit()
+        elif self.number != 0:
             self.free()
         else:
             self.free_others_function(self.x, self.y)
@@ -53,12 +49,12 @@ class Button(QPushButton):
         if not self.flag and not self.question_mark:
             self.flag = True
             globals.number_of_bomb -= 1
-            self.signals.signal1.emit()
+            self.signals.bombs_display.emit()
             self.set_icon('../Images/flag.png', 40, 40)
         elif self.flag:
             self.flag = False
             globals.number_of_bomb += 1
-            self.signals.signal1.emit()
+            self.signals.bombs_display.emit()
             self.question_mark = True
             globals.number_of_no_bomb = globals.number_of_no_bomb + 1
             self.set_icon('../Images/question_mark.png', 20, 20)
@@ -71,22 +67,20 @@ class Button(QPushButton):
     def set_bomb(self):
         self.bomb = True
 
-    def set_neighbours_bomb(self, number):
-        self.neighbours_bomb = number
+    def set_number(self, neighbours_bomb):
+        self.number = neighbours_bomb
 
     def free(self):
         self.setStyleSheet('font-size: 12px;'
                            'font-family: Arial;color: rgb(255, 255, 255);'
                            'background-color: rgb(38,56,76);')
-        #self.setStyleSheet('font-size: 12px;font-family: Arial;color: rgb(0, 0, 0);')
-        self.setText(str(self.neighbours_bomb))
+        self.setText(str(self.number))
         self.status_of_deactivate = True
         globals.number_of_no_bomb = globals.number_of_no_bomb - 1
         self.check_win()
 
-
     def check_able_to_free(self):
-        if self.bomb or self.neighbours_bomb != 0 or self.status_of_deactivate:
+        if self.bomb or self.flag or self.question_mark or self.number != 0 or self.status_of_deactivate:
             return False
         else:
             return True
@@ -94,7 +88,7 @@ class Button(QPushButton):
     def check_win(self):
         if globals.number_of_no_bomb == 0:
             globals.game_over = True
-            self.end_game_function(1)
+            self.signals.win.emit()
 
     def set_icon(self, path, x=35, y=35):
         self.setIcon(QtGui.QIcon(path))

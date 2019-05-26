@@ -9,5 +9,4 @@ class RangeException(Exception):
         return self.__message
 
     def get_statement(self):
-        __state_window = QWidget()
-        __statement = QMessageBox.question(__state_window, "Message", self.__message, QMessageBox.Ok)
+        __statement = QMessageBox.question(QMessageBox(), "Message", self.__message, QMessageBox.Ok)

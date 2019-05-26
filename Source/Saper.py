@@ -1,28 +1,31 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
 from PyQt5.QtCore import Qt
-import sys
 from PyQt5 import QtGui
 from Source.Logic import Logic
 from Source.Menu import Menu
 from Source import globals
 from Source.Signals import Signals
+import sys
+
 
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.menu = Menu(self)
-        self.central_widget = QWidget()
+        __menu = Menu(self)
+        __central_widget = QWidget()
+
+        self.__signals = Signals()
+        self.keys_order = 0  # I need that to notice a keyboard sequences(xyzzy)
+        self.__game = Logic(__central_widget, self.__signals)
+
+        self.setCentralWidget(__central_widget)
         self.properties()
-        self.setCentralWidget(self.central_widget)
-        self.show()
 
     def properties(self):
-        self.setWindowTitle('Saper')
-        self.setWindowIcon(QtGui.QIcon('../Images/WindowMainIcon.png'))
+        self.setWindowTitle('MineSweeper')
+        self.setWindowIcon(QtGui.QIcon('../Images/window_icon.jpg'))
         self.resize(540, 440)
-        #self.setStyleSheet('background-image: url(../Images/WindowMainIcon.png);')
-        self.signals = Signals()
-        self.game = Logic(self.central_widget, self.signals)
+        self.show()
 
     def closeEvent(self, event):  # if we close Window 'event' is generated( QWidget.closeEvent(self, QCloseEvent) )
         answer = QMessageBox.question(self, "Message", "Do you really close the program?")
@@ -31,19 +34,20 @@ class Window(QMainWindow):
         else:
             event.ignore()
 
-    def keyPressEvent(self, e):
+    def keyPressEvent(self, e):     # if user pass in right order 'xyzzy' bomb fields will cloud, 'r' return color
         if e.key() == Qt.Key_X:
-            globals.xyzzy = 1
-        elif e.key() == Qt.Key_Y and globals.xyzzy == 1:
-            globals.xyzzy += 1
-        elif e.key() == Qt.Key_Z and (globals.xyzzy == 2 or globals.xyzzy == 3):
-            globals.xyzzy += 1
-        elif e.key() == Qt.Key_Y and (globals.xyzzy == 4):
-            self.game.change_bombs_color(True)  # bombs fields change color(with False as a arg color return to basic)
+            self.keys_order = 1
+        elif e.key() == Qt.Key_Y and self.keys_order == 1:
+            self.keys_order  += 1
+        elif e.key() == Qt.Key_Z and (self.keys_order == 2 or self.keys_order == 3):
+            self.keys_order += 1
+        elif e.key() == Qt.Key_Y and self.keys_order == 4:
+            self.keys_order = 0
+            self.__signals.cloud_bombs.emit()
         elif e.key() == Qt.Key_R:
-            self.game.change_bombs_color(False)
+            self.__signals.uncloud_bombs.emit()
         else:
-            globals.xyzzy = 0
+            self.keys_order = 0
 
 
 if __name__ == '__main__':
