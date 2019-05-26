@@ -4,9 +4,10 @@ import random
 
 
 class Board:
-    def __init__(self, variable, end_game_function):
+    def __init__(self, variable, end_game_function, signals):
+        self.signals = signals
         self.variable = variable
-        self.__buttons = [[Button(j, i, end_game_function, self.free_others_function, self.free_bombs) for i in range(self.variable['m'])] for j in range(self.variable['n'])]
+        self.__buttons = [[Button(j, i, end_game_function, self.free_others_function, self.free_bombs, self.signals) for i in range(self.variable['m'])] for j in range(self.variable['n'])]
         self.set_bombs()
         self.set_numbers()
         print("\nCreate Board")
@@ -88,7 +89,9 @@ class Board:
 
     def free_bombs(self):
         for i in self.bombs_index:
-            self.__buttons[i[0]][i[1]].set_icon('../Images/bomb.jfif', 20, 20)
+            self.__buttons[i[0]][i[1]].set_icon('../Images/bomb.png', 20, 20)
+        for i in range(5): #change in future
+            self.change_bombs_color(True)
 
     def change_bombs_color(self, change):
         if change:
@@ -97,6 +100,5 @@ class Board:
         else:
             for x, y in self.bombs_index:
                 self.__buttons[x][y].set_basic_color()
-
 
 

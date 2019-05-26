@@ -5,7 +5,7 @@ from PyQt5 import QtGui
 from Source.Logic import Logic
 from Source.Menu import Menu
 from Source import globals
-
+from Source.Signals import Signals
 
 class Window(QMainWindow):
     def __init__(self):
@@ -19,9 +19,10 @@ class Window(QMainWindow):
     def properties(self):
         self.setWindowTitle('Saper')
         self.setWindowIcon(QtGui.QIcon('../Images/WindowMainIcon.png'))
-        self.resize(500, 400)
+        self.resize(540, 440)
         #self.setStyleSheet('background-image: url(../Images/WindowMainIcon.png);')
-        self.game = Logic(self.central_widget)
+        self.signals = Signals()
+        self.game = Logic(self.central_widget, self.signals)
 
     def closeEvent(self, event):  # if we close Window 'event' is generated( QWidget.closeEvent(self, QCloseEvent) )
         answer = QMessageBox.question(self, "Message", "Do you really close the program?")

@@ -5,8 +5,9 @@ from Source import globals
 
 
 class Button(QPushButton):
-    def __init__(self, x, y, end_game_function, free_others_function, free_bombs):
+    def __init__(self, x, y, end_game_function, free_others_function, free_bombs, signals):
         super().__init__()
+        self.signals = signals
         self.x = x
         self.y = y
         self.bomb = False
@@ -19,6 +20,7 @@ class Button(QPushButton):
         self.free_others_function = free_others_function
         self.free_bombs_function = free_bombs
         self.setMaximumSize(35, 35)
+        self.setMinimumSize(35, 35)
         self.set_basic_color()
         self.signal = pyqtSignal()
 
@@ -36,7 +38,6 @@ class Button(QPushButton):
         if self.flag or self.question_mark:
             pass
         elif self.bomb:
-            self.set_icon('../Images/bomb.jfif', 20, 20)
             self.status_of_deactivate = True
             self.free_bombs_function()
             globals.game_over = True
@@ -52,10 +53,12 @@ class Button(QPushButton):
         if not self.flag and not self.question_mark:
             self.flag = True
             globals.number_of_bomb -= 1
-            self.set_icon('../Images/flag.jpg', 20, 20)
+            self.signals.signal1.emit()
+            self.set_icon('../Images/flag.png', 40, 40)
         elif self.flag:
             self.flag = False
             globals.number_of_bomb += 1
+            self.signals.signal1.emit()
             self.question_mark = True
             globals.number_of_no_bomb = globals.number_of_no_bomb + 1
             self.set_icon('../Images/question_mark.png', 20, 20)
@@ -72,11 +75,15 @@ class Button(QPushButton):
         self.neighbours_bomb = number
 
     def free(self):
+        self.setStyleSheet('font-size: 12px;'
+                           'font-family: Arial;color: rgb(255, 255, 255);'
+                           'background-color: rgb(38,56,76);')
+        #self.setStyleSheet('font-size: 12px;font-family: Arial;color: rgb(0, 0, 0);')
         self.setText(str(self.neighbours_bomb))
         self.status_of_deactivate = True
-        self.set_icon(None)
         globals.number_of_no_bomb = globals.number_of_no_bomb - 1
         self.check_win()
+
 
     def check_able_to_free(self):
         if self.bomb or self.neighbours_bomb != 0 or self.status_of_deactivate:
