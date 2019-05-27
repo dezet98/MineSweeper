@@ -16,3 +16,6 @@ def initialize():
 
     global first_click
     first_click = False
+
+    global music
+    music = True

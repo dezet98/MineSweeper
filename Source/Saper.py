@@ -1,23 +1,24 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QWidget
 from PyQt5.QtCore import Qt
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5 import QtGui
 from Source.Logic import Logic
 from Source.Menu import Menu
 from Source import globals
 from Source.Signals import Signals
+from Source.Music import Music
 import sys
 
 
 class Window(QMainWindow):
-    def __init__(self):
+    def __init__(self, signals):
         super().__init__()
-        __menu = Menu(self)
+        __menu = Menu(self, signals)
         __central_widget = QWidget()
 
-        self.__signals = Signals()
+        self.__signals = signals
         self.keys_order = 0  # I need that to notice a keyboard sequences(xyzzy)
         self.__game = Logic(__central_widget, self.__signals)
-
         self.setCentralWidget(__central_widget)
         self.properties()
 
@@ -52,6 +53,12 @@ class Window(QMainWindow):
 
 if __name__ == '__main__':
     globals.initialize()
+    __signals = Signals()
     app = QApplication(sys.argv)
-    window = Window()
+    window = Window(__signals)
+    playlist = QMediaPlaylist()
+    player = QMediaPlayer()
+    playlist.currentIndex()
+    music = Music(playlist, player, __signals)
+    music.play_music()
     sys.exit(app.exec())

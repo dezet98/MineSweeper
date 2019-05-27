@@ -71,9 +71,12 @@ class Logic:
     def clicked_pause_button(self):
         if not globals.game_pause:
             globals.game_pause = True
+            self.signals.stop_music.emit()
             self.__pause_button.setStyleSheet('background-color: rgb(38,56,76);color: rgb(255, 255, 255)')
         else:
             globals.game_pause = False
+            if globals.music:
+                self.signals.play_music.emit()
             self.__pause_button.setStyleSheet('background-color: rgb(, , ,)')
 
     def get_int_variables(self):
@@ -93,3 +96,4 @@ class Logic:
             globals.time = self.curr_time.toString("hh:mm:ss")
             self.signals.time_display.emit()
             self.curr_time = self.curr_time.addSecs(1)
+

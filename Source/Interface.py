@@ -31,7 +31,6 @@ class Interface:
         return self.__board_layout
 
     def clear_board_layout(self, layout):
-        #layout = self.get_board_layout()
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
@@ -48,14 +47,13 @@ class Interface:
         video = QVideoWidget()
         video.resize(500, 400)
         video.setWindowTitle("GAME OVER")
-        # video.resize(self.central_widget.height(), self.central_widget.width())
         player = QMediaPlayer()
         player.setVideoOutput(video)
         player.setMedia(QMediaContent(QUrl.fromLocalFile("../Video/bum.gif")))
         video.show()
-        QSound.play("../Music/bum.wav")
         player.play()
-
+        self.signals.add_music.emit()
         time.sleep(5.5)
+        self.signals.delete_music.emit()
         player.stop()
         video.close()

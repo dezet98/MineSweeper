@@ -10,11 +10,16 @@ class Signals(QObject):
     loose = QtCore.pyqtSignal()
     win = QtCore.pyqtSignal()
     set_bomb = QtCore.pyqtSignal()
+    stop_music = QtCore.pyqtSignal()
+    play_music = QtCore.pyqtSignal()
+    add_music = QtCore.pyqtSignal()
+    delete_music = QtCore.pyqtSignal()
 
     def __init__(self):
         QObject.__init__(self)
 
-    def reconnect(self, signal, signal_call):
+    @staticmethod
+    def reconnect(signal, signal_call):
         while True:
             try:
                 if signal_call is not None:
