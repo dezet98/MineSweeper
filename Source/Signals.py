@@ -5,8 +5,9 @@ from PyQt5 import QtCore
 class Signals(QObject):
     cloud_bombs = QtCore.pyqtSignal()
     uncloud_bombs = QtCore.pyqtSignal()
-    bombs_display = QtCore.pyqtSignal()
-    time_display = QtCore.pyqtSignal()
+    update_bombs_display = QtCore.pyqtSignal()
+    update_time_display = QtCore.pyqtSignal()
+    pause = QtCore.pyqtSignal()
     loose = QtCore.pyqtSignal()
     win = QtCore.pyqtSignal()
     set_bomb = QtCore.pyqtSignal()

@@ -25,21 +25,23 @@ class Window(QMainWindow):
     def properties(self):
         self.setWindowTitle('MineSweeper')
         self.setWindowIcon(QtGui.QIcon('../Images/window_icon.jpg'))
-        self.resize(540, 440)
+        self.setMaximumSize(540, 440)
         self.show()
 
-    def closeEvent(self, event):  # if we close Window 'event' is generated( QWidget.closeEvent(self, QCloseEvent) )
-        answer = QMessageBox.question(self, "Message", "Do you really close the program?")
+    def closeEvent(self, event):
+        self.__signals.stop_music.emit()
+        answer = QMessageBox.question(QMessageBox(), "Message", "Do you really close the program?")
         if answer == QMessageBox.Yes:
             event.accept()
         else:
+            self.__signals.play_music.emit()
             event.ignore()
 
     def keyPressEvent(self, e):     # if user pass in right order 'xyzzy' bomb fields will cloud, 'r' return color
         if e.key() == Qt.Key_X:
             self.keys_order = 1
         elif e.key() == Qt.Key_Y and self.keys_order == 1:
-            self.keys_order  += 1
+            self.keys_order += 1
         elif e.key() == Qt.Key_Z and (self.keys_order == 2 or self.keys_order == 3):
             self.keys_order += 1
         elif e.key() == Qt.Key_Y and self.keys_order == 4:

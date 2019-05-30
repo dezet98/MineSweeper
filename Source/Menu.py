@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QAction, qApp
+import webbrowser
 from Source import globals
 
 
@@ -15,6 +16,7 @@ class Menu:
         options_menu = self.menu_bar.addMenu('Options')
         options_menu.addAction(self.dark())
         options_menu.addAction(self.music())
+        options_menu.addAction(self.help())
 
     def exit(self):
         exit_action = QAction('Exit', self.window)
@@ -49,3 +51,15 @@ class Menu:
         dark_action.setStatusTip("Change a style on dark")
         # stanowczo poprzez zmienne globalne to dorobisz!!!! self.window.setStyleSheet("background-color: black;")
         return dark_action
+
+    def help(self):
+        open_webb = QAction('Help', self.window)
+        open_webb.setShortcut('Ctrl+H')
+        open_webb.setStatusTip('Display a website with rules')
+
+        def web():
+            self.signals.pause.emit()
+            webbrowser.open("https://en.wikipedia.org/wiki/Minesweeper_(video_game)")
+
+        open_webb.triggered.connect(web)
+        return open_webb

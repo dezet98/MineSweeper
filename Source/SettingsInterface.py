@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QFrame, QVBoxLayout, QLCDNumber
+from PyQt5.QtGui import QPixmap
 from Source import globals
-from Source.Signals import Signals
+
 
 class SettingsInterface:
     def __init__(self, variable, signals):
@@ -19,22 +20,27 @@ class SettingsInterface:
         self.__setting_box.addWidget(variable['mines'])
         self.__setting_box.addWidget(variable['ok_button'])
         self.__setting_box.addWidget(variable['pause_button'])
+
         self.__statistics_box = QHBoxLayout()
 
-        self.__statistics_box.addWidget(QLabel("Time: "))
         self.time_display = QLCDNumber()
-        self.__statistics_box.addWidget(self.time_display)
-        self.signals.time_display.connect(self.show_time)
-
-        self.__statistics_box.addWidget(QLabel("Bombs: "))
+        self.time_display.setFrameShape(QFrame.NoFrame)
+        self.time_display.setMaximumSize(80, 60)
+        self.time_display.setMinimumSize(80, 60)
         self.bombs_display = QLCDNumber()
-        self.__statistics_box.addWidget(self.bombs_display)
-        self.signals.bombs_display.connect(self.set_bombs_display)
+        self.bombs_display.setMaximumSize(80, 40)
+        self.bombs_display.setMinimumSize(80, 40)
+        self.bombs_display.setFrameShape(QFrame.NoFrame)
+        self.signals.update_time_display.connect(self.update_time)
+        self.signals.update_bombs_display.connect(self.update_bombs)
 
-    def show_time(self):
+        self.__statistics_box.addWidget(self.time_display)
+        self.__statistics_box.addWidget(self.bombs_display)
+
+    def update_time(self):
         self.time_display.display(globals.time)
 
-    def set_bombs_display(self):
+    def update_bombs(self):
         self.bombs_display.display(globals.number_of_bomb)
 
     def layout(self):
@@ -43,8 +49,15 @@ class SettingsInterface:
         self.__layout = QVBoxLayout()
         self.__layout.addLayout(self.__setting_box)
         self.__layout.addLayout(self.__statistics_box)
-        #frame.setLayout(self.__layout)
-        return self.__layout
+        self.__layout.addStretch(1)
+        self.__layout.setSpacing(10)
+        frame.setLayout(self.__layout)
+        frame.setMaximumSize(560, 126)
+
+        layout = QVBoxLayout()
+        layout.addWidget(frame)
+
+        return layout
 
 
 

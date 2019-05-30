@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLineEdit, QPushButton, QWidget, QMessageBox
+from PyQt5.QtWidgets import QPushButton, QMessageBox, QSpinBox
 from PyQt5 import QtCore
 from Source.Interface import Interface
 from Source import Exceptions
@@ -14,21 +14,19 @@ class Logic:
         self.create_new_game()     # create a default first board
         self.__new_game_button.clicked.connect(self.clicked_new_game_button)
         self.__pause_button.clicked.connect(self.clicked_pause_button)
+        signals.pause.connect(self.clicked_pause_button)
 
     def create_variables(self):
-        self.__n = QLineEdit()
-        # self.__n.setMaximumSize(40, 25)
-        self.__n.setText("8")
-        self.__m = QLineEdit()
-        # self.__m.setMaximumSize(40, 25)
-        self.__m.setText("8")
-        self.__mines = QLineEdit()
-        # self.__mines.setMaximumSize(40, 25)
-        self.__mines.setText("12")
+        self.__n = QSpinBox()
+        self.__n.setValue(8)
+        self.__m = QSpinBox()
+        self.__m.setValue(8)
+        self.__mines = QSpinBox()
+        self.__mines.setValue(12)
         self.__new_game_button = QPushButton("New Game")
         self.__new_game_button.setShortcut(QtCore.Qt.Key_Return)
         self.__pause_button = QPushButton("Pause")
-        self.__pause_button.setShortcut(QtCore.Qt.Key_P)
+        self.__pause_button.setShortcut(QtCore.Qt.Key_Space)
 
     def get_variables(self):
         return {'n': self.__n, 'm': self.__m, 'mines': self.__mines, 'ok_button': self.__new_game_button, 'pause_button': self.__pause_button}
@@ -61,10 +59,10 @@ class Logic:
         globals.game_over = False
         if globals.game_pause:
             self.clicked_pause_button()
-        globals.number_of_no_bomb = int(self.__n.text()) * int(self.__m.text()) - int(self.__mines.text())
+        globals.no_bombs = int(self.__n.text()) * int(self.__m.text()) - int(self.__mines.text())
         globals.number_of_bomb = int(self.__mines.text())
         self.time()
-        self.signals.bombs_display.emit()
+        self.signals.update_bombs_display.emit()
         self.__board = Board(self.get_int_variables(), self.signals)
         self.interface.create_board_layout(self.__board.get_variable())
 
@@ -94,6 +92,6 @@ class Logic:
             self.timer.start(1000)
         else:
             globals.time = self.curr_time.toString("hh:mm:ss")
-            self.signals.time_display.emit()
+            self.signals.update_time_display.emit()
             self.curr_time = self.curr_time.addSecs(1)
 

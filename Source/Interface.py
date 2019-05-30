@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout
 from Source.SettingsInterface import SettingsInterface
 from Source.BoardInterface import BoardInterface
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QSound
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtCore import QUrl
+from Source import globals
 import time
 
 
@@ -15,6 +16,7 @@ class Interface:
         self.signals.loose.connect(self.loose)
         self.signals.win.connect(self.win)
         self.main_layout = QVBoxLayout()
+        self.main_layout.setSpacing(10)
         self.create_settings_layout(variable)
         central_widget.setLayout(self.main_layout)
 
@@ -25,7 +27,9 @@ class Interface:
     def create_board_layout(self, variable):
         self.__board = BoardInterface(variable)
         self.__board_layout = self.__board.layout()
+
         self.main_layout.addLayout(self.__board_layout)
+        self.main_layout.addStretch()
 
     def get_board_layout(self):
         return self.__board_layout
@@ -41,7 +45,7 @@ class Interface:
                     self.clear_board_layout(item.layout())
 
     def win(self):
-         __win_statement = QMessageBox.question(QMessageBox(), "You win!!", "You win!!!\nYour time:", QMessageBox.Ok)
+         __win_statement = QMessageBox.question(QMessageBox(), "You win!!", "You win!!!\nYour time: {}".format(globals.time), QMessageBox.Ok)
 
     def loose(self):
         video = QVideoWidget()
