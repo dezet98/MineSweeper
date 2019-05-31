@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 class BoardInterface:
     def __init__(self, variable):
         self.create_board(variable)
-        print("Create Interface Board\n")
 
     def create_board(self, variable):
         self.__board = QVBoxLayout()

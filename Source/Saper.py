@@ -32,25 +32,29 @@ class Window(QMainWindow):
         self.__signals.stop_music.emit()
         answer = QMessageBox.question(QMessageBox(), "Message", "Do you really close the program?")
         if answer == QMessageBox.Yes:
+            globals.save_values()
+            # here in future can be a function to save game and sb can return to old game,
+            # its will be great idea but that idea need work and new function in Board()
             event.accept()
         else:
             self.__signals.play_music.emit()
             event.ignore()
 
     def keyPressEvent(self, e):     # if user pass in right order 'xyzzy' bomb fields will cloud, 'r' return color
-        if e.key() == Qt.Key_X:
-            self.keys_order = 1
-        elif e.key() == Qt.Key_Y and self.keys_order == 1:
-            self.keys_order += 1
-        elif e.key() == Qt.Key_Z and (self.keys_order == 2 or self.keys_order == 3):
-            self.keys_order += 1
-        elif e.key() == Qt.Key_Y and self.keys_order == 4:
-            self.keys_order = 0
-            self.__signals.cloud_bombs.emit()
-        elif e.key() == Qt.Key_R:
-            self.__signals.uncloud_bombs.emit()
-        else:
-            self.keys_order = 0
+        if not globals.game_pause:
+            if e.key() == Qt.Key_X:
+                self.keys_order = 1
+            elif e.key() == Qt.Key_Y and self.keys_order == 1:
+                self.keys_order += 1
+            elif e.key() == Qt.Key_Z and (self.keys_order == 2 or self.keys_order == 3):
+                self.keys_order += 1
+            elif e.key() == Qt.Key_Y and self.keys_order == 4:
+                self.keys_order = 0
+                self.__signals.cloud_bombs.emit()
+            elif e.key() == Qt.Key_R and not globals.game_over:
+                self.__signals.uncloud_bombs.emit()
+            else:
+                self.keys_order = 0
 
 
 if __name__ == '__main__':

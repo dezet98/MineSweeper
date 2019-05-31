@@ -42,6 +42,7 @@ class Logic:
             if n not in interval1 or m not in interval1 or mines not in interval2:
                 raise Exceptions.RangeException("Incorrect range!\nN, M belong to [2, 15] and Mines to [0, N*M]")
 
+        # if game uses SpinBox value error never happen but I take that for future
         except ValueError:
             print("It's ValueError, user didn't pass 'int'\n")
             __content = "Error: Fill boxes uses natural numbers"
@@ -57,10 +58,12 @@ class Logic:
 
     def create_new_game(self):
         globals.game_over = False
+        globals.first_click = False
+        globals.no_bombs = int(self.__n.text()) * int(self.__m.text()) - int(self.__mines.text())
+        globals.flag_bombs = int(self.__mines.text())
+        globals.bombs = int(self.__mines.text())
         if globals.game_pause:
             self.clicked_pause_button()
-        globals.no_bombs = int(self.__n.text()) * int(self.__m.text()) - int(self.__mines.text())
-        globals.number_of_bomb = int(self.__mines.text())
         self.time()
         self.signals.update_bombs_display.emit()
         self.__board = Board(self.get_int_variables(), self.signals)
@@ -70,6 +73,7 @@ class Logic:
         if not globals.game_pause:
             globals.game_pause = True
             self.signals.stop_music.emit()
+            self.signals.uncloud_bombs.emit()
             self.__pause_button.setStyleSheet('background-color: rgb(38,56,76);color: rgb(255, 255, 255)')
         else:
             globals.game_pause = False
@@ -81,17 +85,19 @@ class Logic:
         return {'n': int(self.__n.text()), 'm': int(self.__m.text()), 'mines': int(self.__mines.text())}
 
     def time(self):
+        globals.time = '00:00:00'
+        self.signals.update_time_display.emit()
         self.curr_time = QtCore.QTime(00, 00, 00)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.count_time)
         self.timer.start(1000)
 
     def count_time(self):
-        if globals.game_over or globals.game_pause:
+        if globals.game_over or globals.game_pause or not globals.first_click:
             self.timer.stop()
             self.timer.start(1000)
+
         else:
             globals.time = self.curr_time.toString("hh:mm:ss")
-            self.signals.update_time_display.emit()
             self.curr_time = self.curr_time.addSecs(1)
-
+            self.signals.update_time_display.emit()

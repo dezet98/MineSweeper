@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 
 
 class Signals(QObject):
+    set_buttons = QtCore.pyqtSignal()
     cloud_bombs = QtCore.pyqtSignal()
     uncloud_bombs = QtCore.pyqtSignal()
     update_bombs_display = QtCore.pyqtSignal()
@@ -10,11 +11,11 @@ class Signals(QObject):
     pause = QtCore.pyqtSignal()
     loose = QtCore.pyqtSignal()
     win = QtCore.pyqtSignal()
-    set_bomb = QtCore.pyqtSignal()
     stop_music = QtCore.pyqtSignal()
     play_music = QtCore.pyqtSignal()
     add_music = QtCore.pyqtSignal()
     delete_music = QtCore.pyqtSignal()
+    hide_question_marks = QtCore.pyqtSignal()
 
     def __init__(self):
         QObject.__init__(self)

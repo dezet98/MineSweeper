@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QFrame, QVBoxLayout, QLCDNumber
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QFrame, QVBoxLayout, QLCDNumber, QPushButton
+from PyQt5 import QtGui
 from Source import globals
 
 
@@ -25,8 +25,8 @@ class SettingsInterface:
 
         self.time_display = QLCDNumber()
         self.time_display.setFrameShape(QFrame.NoFrame)
-        self.time_display.setMaximumSize(80, 60)
-        self.time_display.setMinimumSize(80, 60)
+        self.time_display.setMaximumSize(80, 40)
+        self.time_display.setMinimumSize(80, 40)
         self.bombs_display = QLCDNumber()
         self.bombs_display.setMaximumSize(80, 40)
         self.bombs_display.setMinimumSize(80, 40)
@@ -34,14 +34,50 @@ class SettingsInterface:
         self.signals.update_time_display.connect(self.update_time)
         self.signals.update_bombs_display.connect(self.update_bombs)
 
+        clock = QPushButton()
+        clock.setStyleSheet('border: none;')
+        clock.setIcon(QtGui.QIcon('../Images/clock.png'))
+        clock.setMaximumSize(40, 40)
+        clock.clicked.connect(self.paint_clock)
+        self.clock_click = False
+
+        bomb = QPushButton()
+        bomb.setStyleSheet('border: none;')
+        bomb.setIcon(QtGui.QIcon('../Images/bomb.png'))
+        bomb.setMaximumSize(40, 40)
+        bomb.clicked.connect(self.paint_bomb)
+        self.bomb_click = False
+
+        self.__statistics_box.addWidget(clock)
         self.__statistics_box.addWidget(self.time_display)
+        self.__statistics_box.addWidget(bomb)
         self.__statistics_box.addWidget(self.bombs_display)
+
+    def paint_clock(self):
+        if not self.clock_click:
+            self.clock_click = True
+            self.time_display.setStyleSheet('font-size: 12px;'
+                               'font-family: Arial;color: rgb(255, 255, 255);'
+                               'background-color: rgb(38,56,76);')
+        else:
+            self.clock_click = False
+            self.time_display.setStyleSheet(None)
+
+    def paint_bomb(self):
+        if not self.bomb_click:
+            self.bomb_click = True
+            self.bombs_display.setStyleSheet('font-size: 12px;'
+                                            'font-family: Arial;color: rgb(255, 255, 255);'
+                                            'background-color: rgb(38,56,76);')
+        else:
+            self.bomb_click = False
+            self.bombs_display.setStyleSheet(None)
 
     def update_time(self):
         self.time_display.display(globals.time)
 
     def update_bombs(self):
-        self.bombs_display.display(globals.number_of_bomb)
+        self.bombs_display.display(globals.flag_bombs)
 
     def layout(self):
         frame = QFrame()

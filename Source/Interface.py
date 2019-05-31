@@ -45,19 +45,24 @@ class Interface:
                     self.clear_board_layout(item.layout())
 
     def win(self):
+        # In future I can create win() in Logic() and save result to data base.
+        # Important: 2 rankings!(with users who used pause and others users who play without pause
          __win_statement = QMessageBox.question(QMessageBox(), "You win!!", "You win!!!\nYour time: {}".format(globals.time), QMessageBox.Ok)
 
     def loose(self):
-        video = QVideoWidget()
-        video.resize(500, 400)
-        video.setWindowTitle("GAME OVER")
-        player = QMediaPlayer()
-        player.setVideoOutput(video)
-        player.setMedia(QMediaContent(QUrl.fromLocalFile("../Video/bum.gif")))
-        video.show()
-        player.play()
-        self.signals.add_music.emit()
-        time.sleep(5.5)
-        self.signals.delete_music.emit()
-        player.stop()
-        video.close()
+        if globals.loose_animation:
+            video = QVideoWidget()
+            video.resize(500, 400)
+            video.setWindowTitle("GAME OVER")
+            player = QMediaPlayer()
+            player.setVideoOutput(video)
+            player.setMedia(QMediaContent(QUrl.fromLocalFile("../Video/bum.gif")))
+            video.show()
+            player.play()
+            self.signals.add_music.emit()
+            time.sleep(5.5)
+            self.signals.delete_music.emit()
+            player.stop()
+            video.close()
+        else:
+            __loose_statement = QMessageBox.question(QMessageBox(), "GAME OVER!!", "You loose!!!\nYour time: {}".format(globals.time), QMessageBox.Ok)

@@ -1,6 +1,6 @@
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 from PyQt5.QtCore import QUrl
-
+from Source import globals
 
 class Music:
     def __init__(self, playlist, player, signals):
@@ -20,7 +20,8 @@ class Music:
         self.player.stop()
 
     def play_music(self):
-        self.player.play()
+        if globals.music:
+            self.player.play()
 
     def add_music(self, path):
         url = QUrl.fromLocalFile(path)

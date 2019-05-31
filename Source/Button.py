@@ -34,6 +34,11 @@ class Button(QPushButton):
             self.mouse_right_click()
 
     def mouse_left_click(self):
+        if not globals.first_click:
+            globals.first_click = True
+            globals.first_click_xy = [self.x, self.y]
+            self.signals.set_buttons.emit()
+
         if self.bomb:
             globals.game_over = True
             self.free_bombs_function()
@@ -44,40 +49,47 @@ class Button(QPushButton):
             else:
                 self.free_others_function(self.x, self.y)
 
-    # maybe better idea it will be do me own signal for change flag!!!!(its true)
     def mouse_right_click(self):
-        self.check_win()
         if not self.flag and not self.question_mark:
             self.flag = True
-            globals.number_of_bomb -= 1
+            globals.flag_bombs -= 1
+            if self.bomb:
+                globals.bombs -= 1
             self.signals.update_bombs_display.emit()
             self.set_icon('../Images/flag.png', 40, 40)
-        elif self.flag: #hhhhhhhhhhhhhhhhhhhhhere
+        elif self.flag and globals.question_marks:
             self.flag = False
-            globals.number_of_bomb += 1
+            globals.flag_bombs += 1
+            if self.bomb:
+                globals.bombs += 1
             self.signals.update_bombs_display.emit()
-            globals.no_bombs += 1
             self.question_mark = True
             self.set_icon('../Images/question_mark.png', 20, 20)
-        else:
-            globals.no_bombs -= 1
-            self.question_mark = False
-            self.setIconSize(QSize(35, 35))
+        elif not globals.question_marks:
+            self.flag = False
+            globals.flag_bombs += 1
+            if self.bomb:
+                globals.bombs += 1
+            self.signals.update_bombs_display.emit()
             self.set_icon(None)
+        else:
+            self.question_mark = False
+            self.set_icon(None)
+
+        self.check_win()
 
     def free(self):
         self.deactivate = True
         globals.no_bombs -= 1
-        self.check_win()
         self.setStyleSheet('font-size: 12px;'
                            'font-family: Arial;color: rgb(255, 255, 255);'
                            'background-color: rgb(38,56,76);')
+        self.check_win()
         if self.number != 0:
             self.setText(str(self.number))
 
     def check_win(self):
-        if globals.no_bombs == 0:
-            print(globals.no_bombs)
+        if globals.no_bombs == 0 or (globals.bombs == 0 and globals.flag_bombs == 0):
             globals.game_over = True
             self.signals.win.emit()
 
@@ -109,3 +121,8 @@ class Button(QPushButton):
     def set_basic_color(self):
         self.r, self.g, self.b = 100, 100, 255
         self.setStyleSheet('background-color: rgb({}, {}, {});'.format(self.r, self.g, self.b))
+
+    def hide_question_mark(self):
+        if self.question_mark and not self.deactivate:
+            self.question_mark = False
+            self.set_icon(None)
